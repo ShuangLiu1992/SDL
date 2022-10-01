@@ -4,6 +4,8 @@ endif()
 
 cmake_minimum_required(VERSION 3.0.0)
 project(SDL2 C CXX)
+include(conanbuildinfo.cmake)
+conan_basic_setup(NO_OUTPUT_DIRS)
 
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
   set(SDL2_SUBPROJECT OFF)
