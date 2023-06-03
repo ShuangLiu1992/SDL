@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -9,8 +9,8 @@
   including commercial applications, and to alter it and redistribute it
   freely.
 */
-#include <stdio.h>
-#include "SDL.h"
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
 
 /* !!! FIXME: move this to the test framework */
 
@@ -47,10 +47,10 @@ int main(int argc, char **argv)
             while (keep_going) {
                 SDL_Event e;
                 while (SDL_PollEvent(&e)) {
-                    if (e.type == SDL_QUIT) {
+                    if (e.type == SDL_EVENT_QUIT) {
                         keep_going = SDL_FALSE;
-                    } else if (e.type == SDL_LOCALECHANGED) {
-                        SDL_Log("Saw SDL_LOCALECHANGED event!");
+                    } else if (e.type == SDL_EVENT_LOCALE_CHANGED) {
+                        SDL_Log("Saw SDL_EVENT_LOCALE_CHANGED event!");
                         log_locales();
                     }
                 }
@@ -61,7 +61,5 @@ int main(int argc, char **argv)
         SDL_Quit();
     }
 
-   return 0;
+    return 0;
 }
-
-/* vi: set ts=4 sw=4 expandtab: */

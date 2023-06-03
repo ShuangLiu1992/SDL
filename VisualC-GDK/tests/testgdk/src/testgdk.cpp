@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -18,9 +18,10 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "SDL_test.h"
-#include "SDL_test_common.h"
+#include <SDL3/SDL_test.h>
+#include <SDL3/SDL_test_common.h>
 #include "../src/core/windows/SDL_windows.h"
+#include <SDL3/SDL_main.h>
 
 extern "C" {
 #include "../test/testutils.h"
@@ -69,7 +70,7 @@ quit(int rc)
 {
     SDL_free(sprites);
     close_audio();
-    SDL_FreeWAV(wave.sound);
+    SDL_free(wave.sound);
     SDLTest_CommonQuit(state);
     /* If rc is 0, just let main return normally rather than calling exit.
      * This allows testing of platforms where SDL_main is required and does meaningful cleanup.
@@ -86,7 +87,7 @@ open_audio()
     device = SDL_OpenAudioDevice(NULL, SDL_FALSE, &wave.spec, NULL, 0);
     if (!device) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't open audio: %s\n", SDL_GetError());
-        SDL_FreeWAV(wave.sound);
+        SDL_free(wave.sound);
         quit(2);
     }
 
@@ -239,17 +240,17 @@ LoadSprite(const char *file)
         /* This does the SDL_LoadBMP step repeatedly, but that's OK for test code. */
         sprites[i] = LoadTexture(state->renderers[i], file, SDL_TRUE, &sprite_w, &sprite_h);
         if (!sprites[i]) {
-            return (-1);
+            return -1;
         }
         if (SDL_SetTextureBlendMode(sprites[i], blendMode) < 0) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set blend mode: %s\n", SDL_GetError());
             SDL_DestroyTexture(sprites[i]);
-            return (-1);
+            return -1;
         }
     }
 
     /* We're ready to roll. :) */
-    return (0);
+    return 0;
 }
 
 void
@@ -364,8 +365,9 @@ loop()
 #endif
     }
     for (i = 0; i < state->num_windows; ++i) {
-        if (state->windows[i] == NULL)
+        if (state->windows[i] == NULL) {
             continue;
+        }
         DrawSprites(state->renderers[i], sprites[i]);
     }
 }
@@ -382,7 +384,7 @@ main(int argc, char *argv[])
 
     /* Initialize test framework */
     state = SDLTest_CommonCreateState(argv, SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-    if (!state) {
+    if (state == NULL) {
         return 1;
     }
 
@@ -445,7 +447,7 @@ main(int argc, char *argv[])
     /* Create the windows, initialize the renderers, and load the textures */
     sprites =
         (SDL_Texture **) SDL_malloc(state->num_windows * sizeof(*sprites));
-    if (!sprites) {
+    if (sprites == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Out of memory!\n");
         quit(2);
     }
@@ -498,5 +500,3 @@ main(int argc, char *argv[])
     SDL_free(soundname);
     return 0;
 }
-
-/* vi: set ts=4 sw=4 expandtab: */
